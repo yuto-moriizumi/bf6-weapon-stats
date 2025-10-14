@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface DamageEntry {
@@ -14,7 +14,8 @@ interface WeaponCategory {
   name: string;
 }
 
-export default function EditWeaponPage({ params }: { params: { id: string } }) {
+export default function EditWeaponPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
   const [name, setName] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -31,7 +32,7 @@ export default function EditWeaponPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     Promise.all([
       fetch("/api/weapons?type=categories").then((res) => res.json()),
-      fetch(`/api/weapons/${params.id}`).then((res) => res.json()),
+      fetch(`/api/weapons/${id}`).then((res) => res.json()),
     ])
       .then(([categoriesData, weaponData]) => {
         if (Array.isArray(categoriesData)) {
@@ -48,7 +49,7 @@ export default function EditWeaponPage({ params }: { params: { id: string } }) {
       })
       .catch((err) => console.error(err))
       .finally(() => setInitialLoading(false));
-  }, [params.id]);
+  }, [id]);
 
   const addDamageEntry = () => {
     setDamages([...damages, { distance: 0, damage: 0 }]);
@@ -77,7 +78,7 @@ export default function EditWeaponPage({ params }: { params: { id: string } }) {
     );
 
     try {
-      const response = await fetch(`/api/weapons/${params.id}`, {
+      const response = await fetch(`/api/weapons/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -98,7 +99,7 @@ export default function EditWeaponPage({ params }: { params: { id: string } }) {
       });
 
       if (response.ok) {
-        router.push(`/weapons/${params.id}`);
+        router.push(`/weapons/${id}`);
         router.refresh();
       } else {
         alert("Failed to update weapon");
@@ -260,7 +261,7 @@ export default function EditWeaponPage({ params }: { params: { id: string } }) {
             </button>
             <button
               type="button"
-              onClick={() => router.push(`/weapons/${params.id}`)}
+              onClick={() => router.push(`/weapons/${id}`)}
               className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-gray-600"
             >
               Cancel
