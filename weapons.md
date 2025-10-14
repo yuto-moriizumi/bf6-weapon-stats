@@ -360,3 +360,314 @@ Mobility: 60
 Damage (Chest):
   0m+: 33 damage (4 STK, 250ms TTK)
 
+
+
+## LMG
+
+### L110
+Category: LMG
+Bullet Velocity: 780 m/s
+RPM: 720
+Magazine Size: 100
+Reload Speed: 6.5 s
+ADS: 301 ms
+Headshot Multiplier: 1.34
+Hipfire: 28
+Precision: 33
+Recoil Control: 68
+Mobility: 36
+Damage (Chest):
+  0-20m: 25 damage (4 STK, 250ms TTK)
+  20m+: 20 damage (5 STK, 342ms TTK)
+
+### DRS-IAR
+Category: LMG
+Bullet Velocity: 720 m/s
+RPM: 771
+Magazine Size: 30
+Reload Speed: 2.47 s
+ADS: 367 ms
+Headshot Multiplier: 1.34
+Hipfire: 46
+Precision: 29
+Recoil Control: 46
+Mobility: 40
+Damage (Chest):
+  0m+: 25 damage (4 STK, 233ms TTK)
+
+### M/60
+Category: LMG
+Bullet Velocity: 720 m/s
+RPM: 514
+Magazine Size: 50
+Reload Speed: 1.59 s
+ADS: 235 ms
+Headshot Multiplier: 1.34
+Hipfire: 28
+Precision: 26
+Recoil Control: 55
+Mobility: 46
+Damage (Chest):
+  0-20m: 33 damage (4 STK, 350ms TTK)
+  20m+: 25 damage (4 STK, 361ms TTK)
+
+### RPKM
+Category: LMG
+Bullet Velocity: 837 m/s
+RPM: 553
+Magazine Size: 40
+Reload Speed: 2.8 s
+ADS: 367 ms
+Headshot Multiplier: 1.34
+Hipfire: 46
+Precision: 44
+Recoil Control: 46
+Mobility: 38
+Damage (Chest):
+  0m+: 33 damage (4 STK, 325ms TTK)
+
+### M123K
+Category: LMG
+Bullet Velocity: 536 m/s
+RPM: 830
+Magazine Size: 100
+Reload Speed: 6.65 s
+ADS: 367 ms
+Headshot Multiplier: 1.34
+Hipfire: 46
+Precision: 22
+Recoil Control: 50
+Mobility: 34
+Damage (Chest):
+  0m+: 25 damage (4 STK, 217ms TTK)
+
+### M250
+Category: LMG
+Bullet Velocity: 760 m/s
+RPM: 675
+Magazine Size: 50
+Reload Speed: 5.75 s
+ADS: 433 ms
+Headshot Multiplier: 1.34
+Hipfire: 34
+Precision: 30
+Recoil Control: 44
+Mobility: 28
+Damage (Chest):
+  0m+: 25 damage (4 STK, 267ms TTK)
+
+### KTS100 MK8
+Category: LMG
+Bullet Velocity: 1,050 m/s
+RPM: 514
+Magazine Size: 60
+Reload Speed: 3.25 s
+ADS: 367 ms
+Headshot Multiplier: 1.34
+Hipfire: 46
+Precision: 72
+Recoil Control: 66
+Mobility: 38
+Damage (Chest):
+  0-35m: 25 damage (4 STK, 350ms TTK)
+  35m+: 20 damage (5 STK, 484ms TTK)
+
+### M240L
+Category: LMG
+Bullet Velocity: 630 m/s
+RPM: 600
+Magazine Size: 50
+Reload Speed: 4.25 s
+ADS: 433 ms
+Headshot Multiplier: 1.34
+Hipfire: 40
+Precision: 23
+Recoil Control: 42
+Mobility: 30
+Damage (Chest):
+  0m+: 33 damage (4 STK, 300ms TTK)
+
+
+## DMR
+
+### M39 EMR
+Category: DMR
+Bullet Velocity: 1,000 m/s
+RPM: 257
+Magazine Size: 15
+Reload Speed: 2.53 s
+ADS: 200 ms
+Headshot Multiplier: 1.5
+Hipfire: 28
+Precision: 73
+Recoil Control: 21
+Mobility: 50
+Damage (Chest):
+  0-20m: 40 damage (3 STK, 467ms TTK)
+  20m+: 38 damage (3 STK, 470ms TTK)
+
+### LMR27
+Category: DMR
+Bullet Velocity: 880 m/s
+RPM: 450
+Magazine Size: 10
+Reload Speed: 3.03 s
+ADS: 250 ms
+Headshot Multiplier: 1.34
+Hipfire: 54
+Precision: 48
+Recoil Control: 30
+Mobility: 52
+Damage (Chest):
+  0m+: 27 damage (4 STK, 400ms TTK)
+
+### SVK-8.6
+Category: DMR
+Bullet Velocity: 900 m/s
+RPM: 150
+Magazine Size: 10
+Reload Speed: 2.97 s
+ADS: 317 ms
+Headshot Multiplier: 1.5
+Hipfire: 28
+Precision: 37
+Recoil Control: 11
+Mobility: 36
+Damage (Chest):
+  0-35m: 66 damage (2 STK, 400ms TTK)
+  35m+: 50 damage (2 STK, 422ms TTK)
+
+### SVDM
+Category: DMR
+Bullet Velocity: 640 m/s
+RPM: 300
+Magazine Size: 10
+Reload Speed: 2.5 s
+ADS: 300 ms
+Headshot Multiplier: 1.5
+Hipfire: 40
+Precision: 51
+Recoil Control: 17
+Mobility: 44
+Damage (Chest):
+  0m+: 40 damage (3 STK, 400ms TTK)
+
+
+## Sniper Rifle
+
+### M2010 ESR
+Category: Sniper Rifle
+Bullet Velocity: 1,025 m/s
+RPM: 43
+Magazine Size: 5
+Reload Speed: 3.23 s
+ADS: 250 ms
+Headshot Multiplier: 1.75
+Hipfire: 34
+Precision: 100
+Recoil Control: 30
+Mobility: 40
+Damage (Chest):
+  0-10m: 100 damage (1 STK, 0ms TTK)
+  10-70m: 64 damage (2 STK, 1,395ms TTK)
+  70m+: 77 damage (2 STK, 1,447ms TTK)
+
+### SV-98
+Category: Sniper Rifle
+Bullet Velocity: 720 m/s
+RPM: 38
+Magazine Size: 10
+Reload Speed: 2.98 s
+ADS: 300 ms
+Headshot Multiplier: 1.75
+Hipfire: 34
+Precision: 100
+Recoil Control: 36
+Mobility: 38
+Damage (Chest):
+  0m+: 100 damage (1 STK, 0ms TTK)
+
+### PSR
+Category: Sniper Rifle
+Bullet Velocity: 720 m/s
+RPM: 38
+Magazine Size: 10
+Reload Speed: 3.35 s
+ADS: 367 ms
+Headshot Multiplier: 1.75
+Hipfire: 28
+Precision: 100
+Recoil Control: 24
+Mobility: 30
+Damage (Chest):
+  0m+: 100 damage (1 STK, 0ms TTK)
+
+## Pistol
+Name: P18
+Category: Pistol
+Bullet Velocity: 350 m/s
+RPM: 400
+Magazine Size: 17
+Reload Speed: 1.93 s
+ADS: 167 ms
+Headshot Multiplier: 1.34
+Hipfire: 54
+Precision: 54
+Recoil Control: 25
+Mobility: 72
+Damage (Chest):
+  0-10m: 25 damage (4 STK, 450ms TTK)
+  10-20m: 20 damage (5 STK, 612ms TTK)
+  20-35m: 17 damage (6 STK, 790ms TTK)
+  35m+: 14 damage (8 STK, 1133ms TTK)
+
+Name: ES 5.7
+Category: Pistol
+Bullet Velocity: 650 m/s
+RPM: 450
+Magazine Size: 20
+Reload Speed: 2.02 s
+ADS: 133 ms
+Headshot Multiplier: 1.34
+Hipfire: 54
+Precision: 55
+Recoil Control: 31
+Mobility: 78
+Damage (Chest):
+  0m+: 20 damage (5 STK, 533ms TTK)
+
+Name: M44
+Category: Pistol
+Bullet Velocity: 440 m/s
+RPM: 163
+Magazine Size: 6
+Reload Speed: 3.4 s
+ADS: 200 ms
+Headshot Multiplier: 1.5
+Hipfire: 54
+Precision: 22
+Recoil Control: 2
+Mobility: 64
+Damage (Chest):
+  0-10m: 60 damage (2 STK, 368ms TTK)
+  10-20m: 50 damage (2 STK, 368ms TTK)
+  20-35m: 45 damage (3 STK, 736ms TTK)
+  35m+: 40 damage (3 STK, 736ms TTK)
+
+Name: M45A1
+Category: Pistol
+Bullet Velocity: 336 m/s
+RPM: 327
+Magazine Size: 7
+Reload Speed: 1.87 s
+ADS: 167 ms
+Headshot Multiplier: 1.34
+Hipfire: 54
+Precision: 51
+Recoil Control: 17
+Mobility: 72
+Damage (Chest):
+  0-10m: 45 damage (3 STK, 367ms TTK)
+  10-20m: 35 damage (3 STK, 367ms TTK)
+  20-35m: 28 damage (4 STK, 550ms TTK)
+  35m+: 23 damage (5 STK, 734ms TTK)
