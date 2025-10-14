@@ -1,19 +1,19 @@
-import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
-import DamageChart from './DamageChart'
-import TTKChart from './TTKChart'
-import Link from 'next/link'
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import DamageChart from "./DamageChart";
+import TTKChart from "./TTKChart";
+import Link from "next/link";
 
-export const dynamic = 'force-static';
+export const dynamic = "force-static";
 
 export async function generateStaticParams() {
   const weapons = await prisma.weapon.findMany({
-    select: { id: true }
-  })
-  
+    select: { id: true },
+  });
+
   return weapons.map((weapon) => ({
-    id: weapon.id.toString()
-  }))
+    id: weapon.id.toString(),
+  }));
 }
 
 async function getWeapon(id: number) {
@@ -22,41 +22,38 @@ async function getWeapon(id: number) {
     include: {
       damages: {
         orderBy: {
-          distance: 'asc'
-        }
+          distance: "asc",
+        },
       },
-      category: true
-    }
-  })
-  return weapon
+      category: true,
+    },
+  });
+  return weapon;
 }
 
 export default async function WeaponDetailPage({
-  params
+  params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params
-  const weaponId = parseInt(id)
-  
+  const { id } = await params;
+  const weaponId = parseInt(id);
+
   if (isNaN(weaponId)) {
-    notFound()
+    notFound();
   }
 
-  const weapon = await getWeapon(weaponId)
+  const weapon = await getWeapon(weaponId);
 
   if (!weapon) {
-    notFound()
+    notFound();
   }
 
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <Link 
-            href="/"
-            className="text-blue-500 hover:text-blue-600"
-          >
+          <Link href="/" className="text-blue-500 hover:text-blue-600">
             ← Back to List
           </Link>
           <Link
@@ -87,8 +84,8 @@ export default async function WeaponDetailPage({
 
         <div className="border rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-bold mb-6">TTK by Distance</h2>
-          <TTKChart 
-            damages={weapon.damages} 
+          <TTKChart
+            damages={weapon.damages}
             fireRate={weapon.fireRate}
             bulletVelocity={weapon.bulletVelocity}
           />
@@ -100,5 +97,5 @@ export default async function WeaponDetailPage({
         </div>
       </div>
     </div>
-  )
+  );
 }

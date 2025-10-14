@@ -5,7 +5,7 @@
     "playwrightmcp": {
       "type": "local",
       "command": ["npx", "@playwright/mcp@latest"],
-      "enabled": true
-    }
-  }
+      "enabled": true,
+    },
+  },
 }

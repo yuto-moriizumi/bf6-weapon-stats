@@ -14,7 +14,11 @@ interface WeaponCategory {
   name: string;
 }
 
-export default function EditWeaponPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditWeaponPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const router = useRouter();
   const [name, setName] = useState("");
@@ -62,7 +66,7 @@ export default function EditWeaponPage({ params }: { params: Promise<{ id: strin
   const updateDamageEntry = (
     index: number,
     field: "distance" | "damage",
-    value: number
+    value: number,
   ) => {
     const newDamages = [...damages];
     newDamages[index][field] = value;
@@ -74,7 +78,7 @@ export default function EditWeaponPage({ params }: { params: Promise<{ id: strin
     setLoading(true);
 
     const selectedCategory = categories.find(
-      (c) => c.id === parseInt(categoryId)
+      (c) => c.id === parseInt(categoryId),
     );
 
     try {
@@ -205,7 +209,9 @@ export default function EditWeaponPage({ params }: { params: Promise<{ id: strin
             {damages.map((entry, index) => (
               <div key={index} className="flex gap-4 mb-3">
                 <div className="flex-1">
-                  <label className="block mb-1 text-sm font-medium">Distance (m)</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Distance (m)
+                  </label>
                   <input
                     type="number"
                     value={entry.distance}
@@ -213,7 +219,7 @@ export default function EditWeaponPage({ params }: { params: Promise<{ id: strin
                       updateDamageEntry(
                         index,
                         "distance",
-                        parseInt(e.target.value)
+                        parseInt(e.target.value),
                       )
                     }
                     placeholder="Distance (m)"
@@ -222,7 +228,9 @@ export default function EditWeaponPage({ params }: { params: Promise<{ id: strin
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block mb-1 text-sm font-medium">Damage</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Damage
+                  </label>
                   <input
                     type="number"
                     value={entry.damage}
@@ -230,7 +238,7 @@ export default function EditWeaponPage({ params }: { params: Promise<{ id: strin
                       updateDamageEntry(
                         index,
                         "damage",
-                        parseInt(e.target.value)
+                        parseInt(e.target.value),
                       )
                     }
                     placeholder="Damage"

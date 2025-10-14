@@ -1,49 +1,51 @@
-'use client'
+"use client";
 
-import { useState, useMemo } from 'react'
-import Link from 'next/link'
-import { calculateTTK } from '@/lib/ttk'
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import { calculateTTK } from "@/lib/ttk";
 
 type Damage = {
-  distance: number
-  damage: number
-}
+  distance: number;
+  damage: number;
+};
 
 type Weapon = {
-  id: number
-  name: string
-  fireRate: number
-  magazine: number
-  reloadTime: number
-  bulletVelocity: number
-  damages: Damage[]
+  id: number;
+  name: string;
+  fireRate: number;
+  magazine: number;
+  reloadTime: number;
+  bulletVelocity: number;
+  damages: Damage[];
   category: {
-    id: number
-    name: string
-  }
-}
+    id: number;
+    name: string;
+  };
+};
 
 type Category = {
-  id: number
-  name: string
-}
+  id: number;
+  name: string;
+};
 
 function calculateDPS(weapon: Weapon, distance: number): number {
-  if (weapon.damages.length === 0) return 0
+  if (weapon.damages.length === 0) return 0;
 
-  const sortedDamages = [...weapon.damages].sort((a, b) => a.distance - b.distance)
-  
-  let damage = sortedDamages[0].damage
-  
+  const sortedDamages = [...weapon.damages].sort(
+    (a, b) => a.distance - b.distance,
+  );
+
+  let damage = sortedDamages[0].damage;
+
   for (let i = 0; i < sortedDamages.length; i++) {
     if (sortedDamages[i].distance <= distance) {
-      damage = sortedDamages[i].damage
+      damage = sortedDamages[i].damage;
     } else {
-      break
+      break;
     }
   }
-  
-  return (damage * weapon.fireRate) / 60
+
+  return (damage * weapon.fireRate) / 60;
 }
 
 function calculateWeaponTTK(weapon: Weapon, distance: number): number {
@@ -51,48 +53,59 @@ function calculateWeaponTTK(weapon: Weapon, distance: number): number {
     weapon.damages,
     distance,
     weapon.bulletVelocity,
-    weapon.fireRate
-  )
+    weapon.fireRate,
+  );
 }
 
-export default function RankingTable({ weapons, categories }: { weapons: Weapon[], categories: Category[] }) {
-  const [distance, setDistance] = useState(0)
+export default function RankingTable({
+  weapons,
+  categories,
+}: {
+  weapons: Weapon[];
+  categories: Category[];
+}) {
+  const [distance, setDistance] = useState(0);
   const [selectedCategories, setSelectedCategories] = useState<Set<number>>(
-    new Set(categories.map(c => c.id))
-  )
-  const maxDistance = 100
+    new Set(categories.map((c) => c.id)),
+  );
+  const maxDistance = 100;
 
   const toggleCategory = (categoryId: number) => {
-    setSelectedCategories(prev => {
-      const newSet = new Set(prev)
+    setSelectedCategories((prev) => {
+      const newSet = new Set(prev);
       if (newSet.has(categoryId)) {
-        newSet.delete(categoryId)
+        newSet.delete(categoryId);
       } else {
-        newSet.add(categoryId)
+        newSet.add(categoryId);
       }
-      return newSet
-    })
-  }
+      return newSet;
+    });
+  };
 
   const rankedWeapons = useMemo(() => {
     return weapons
-      .filter(weapon => selectedCategories.has(weapon.category.id))
-      .map(weapon => ({
+      .filter((weapon) => selectedCategories.has(weapon.category.id))
+      .map((weapon) => ({
         ...weapon,
         dps: calculateDPS(weapon, distance),
-        ttk: calculateWeaponTTK(weapon, distance)
+        ttk: calculateWeaponTTK(weapon, distance),
       }))
-      .sort((a, b) => a.ttk - b.ttk)
-  }, [weapons, distance, selectedCategories])
+      .sort((a, b) => a.ttk - b.ttk);
+  }, [weapons, distance, selectedCategories]);
 
   return (
     <div>
       <div className="mb-8 bg-white border rounded-lg p-6">
         <div className="mb-6">
-          <span className="text-lg font-semibold text-gray-900 block mb-3">Category Filter</span>
+          <span className="text-lg font-semibold text-gray-900 block mb-3">
+            Category Filter
+          </span>
           <div className="flex flex-wrap gap-4">
-            {categories.map(category => (
-              <label key={category.id} className="flex items-center space-x-2 cursor-pointer">
+            {categories.map((category) => (
+              <label
+                key={category.id}
+                className="flex items-center space-x-2 cursor-pointer"
+              >
                 <input
                   type="checkbox"
                   checked={selectedCategories.has(category.id)}
@@ -107,7 +120,9 @@ export default function RankingTable({ weapons, categories }: { weapons: Weapon[
 
         <div className="border-t pt-6">
           <label className="block mb-4">
-            <span className="text-lg font-semibold text-gray-900">Distance: {distance}m</span>
+            <span className="text-lg font-semibold text-gray-900">
+              Distance: {distance}m
+            </span>
           </label>
           <input
             type="range"
@@ -158,7 +173,7 @@ export default function RankingTable({ weapons, categories }: { weapons: Weapon[
                   {index + 1}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <Link 
+                  <Link
                     href={`/weapons/${weapon.id}`}
                     className="text-blue-500 hover:text-blue-600 font-medium"
                   >
@@ -186,5 +201,5 @@ export default function RankingTable({ weapons, categories }: { weapons: Weapon[
         </table>
       </div>
     </div>
-  )
+  );
 }

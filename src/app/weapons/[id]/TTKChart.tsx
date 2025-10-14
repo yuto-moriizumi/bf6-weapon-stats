@@ -37,7 +37,7 @@ export default function TTKChart({
     data.push({
       distance,
       ttk: Math.round(
-        calculateTTK(sortedDamages, distance, bulletVelocity, fireRate)
+        calculateTTK(sortedDamages, distance, bulletVelocity, fireRate),
       ),
     });
   }

@@ -48,7 +48,7 @@ export default function NewWeaponPage() {
   const updateDamageEntry = (
     index: number,
     field: "distance" | "damage",
-    value: number
+    value: number,
   ) => {
     const newDamages = [...damages];
     newDamages[index][field] = value;
@@ -60,7 +60,7 @@ export default function NewWeaponPage() {
     setLoading(true);
 
     const selectedCategory = categories.find(
-      (c) => c.id === parseInt(categoryId)
+      (c) => c.id === parseInt(categoryId),
     );
 
     try {
@@ -182,7 +182,9 @@ export default function NewWeaponPage() {
             {damages.map((entry, index) => (
               <div key={index} className="flex gap-4 mb-3">
                 <div className="flex-1">
-                  <label className="block mb-1 text-sm font-medium">Distance (m)</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Distance (m)
+                  </label>
                   <input
                     type="number"
                     value={entry.distance}
@@ -190,7 +192,7 @@ export default function NewWeaponPage() {
                       updateDamageEntry(
                         index,
                         "distance",
-                        parseInt(e.target.value)
+                        parseInt(e.target.value),
                       )
                     }
                     placeholder="Distance (m)"
@@ -199,7 +201,9 @@ export default function NewWeaponPage() {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block mb-1 text-sm font-medium">Damage</label>
+                  <label className="block mb-1 text-sm font-medium">
+                    Damage
+                  </label>
                   <input
                     type="number"
                     value={entry.damage}
@@ -207,7 +211,7 @@ export default function NewWeaponPage() {
                       updateDamageEntry(
                         index,
                         "damage",
-                        parseInt(e.target.value)
+                        parseInt(e.target.value),
                       )
                     }
                     placeholder="Damage"
