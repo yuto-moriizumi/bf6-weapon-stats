@@ -29,49 +29,18 @@ export default function TTKChart({
   fireRate,
   bulletVelocity,
 }: TTKChartProps) {
-  // Sort damages by distance
   const sortedDamages = [...damages].sort((a, b) => a.distance - b.distance);
 
   const data = [];
 
-  // First point at distance 0
-  if (sortedDamages.length > 0) {
+  for (let distance = 0; distance <= 100; distance++) {
     data.push({
-      distance: 0,
-      ttk: Math.round(calculateTTK(sortedDamages, 0, bulletVelocity, fireRate)),
-    });
-  }
-
-  // For each damage breakpoint (except the first at distance 0), add two points at the same distance:
-  // 1. Right end of previous range (using distance - 0.001 for calculation but same x coordinate)
-  // 2. Left start of new range (using distance for calculation)
-  for (let i = 1; i < sortedDamages.length; i++) {
-    const distance = sortedDamages[i].distance;
-
-    // Right end of previous damage range (just before breakpoint)
-    data.push({
-      distance: distance,
-      ttk: Math.round(
-        calculateTTK(sortedDamages, distance - 0.001, bulletVelocity, fireRate)
-      ),
-    });
-
-    // Left start of new damage range (at breakpoint)
-    data.push({
-      distance: distance,
+      distance,
       ttk: Math.round(
         calculateTTK(sortedDamages, distance, bulletVelocity, fireRate)
       ),
     });
   }
-
-  // Add endpoint at 100m
-  data.push({
-    distance: 100,
-    ttk: Math.round(
-      calculateTTK(sortedDamages, 100, bulletVelocity, fireRate)
-    ),
-  });
 
   return (
     <ResponsiveContainer width="100%" height={400}>
