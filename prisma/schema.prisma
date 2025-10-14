@@ -12,7 +12,7 @@ model Damage {
   weaponId Int
   distance Int
   damage   Int
-  Weapon   Weapon @relation(fields: [weaponId], references: [id], onDelete: Cascade)
+  weapon   Weapon @relation(fields: [weaponId], references: [id], onDelete: Cascade)
 
   @@unique([weaponId, distance])
 }
@@ -27,12 +27,12 @@ model Weapon {
   updatedAt      DateTime       @updatedAt
   bulletVelocity Float
   categoryId     Int
-  Damage         Damage[]
-  WeaponCategory WeaponCategory @relation(fields: [categoryId], references: [id])
+  damages        Damage[]
+  category       WeaponCategory @relation(fields: [categoryId], references: [id])
 }
 
 model WeaponCategory {
-  id     Int      @id @default(autoincrement())
-  name   String   @unique
-  Weapon Weapon[]
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  weapons Weapon[]
 }
