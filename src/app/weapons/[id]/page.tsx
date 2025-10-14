@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import DamageChart from './DamageChart'
+import TTKChart from './TTKChart'
 import Link from 'next/link'
 
 async function getWeapon(id: number) {
@@ -70,6 +71,15 @@ export default async function WeaponDetailPage({
             <p className="text-sm text-gray-500">Reload Time</p>
             <p className="text-2xl font-semibold">{weapon.reloadTime}s</p>
           </div>
+        </div>
+
+        <div className="border rounded-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-6">TTK by Distance</h2>
+          <TTKChart 
+            damages={weapon.damages} 
+            fireRate={weapon.fireRate}
+            bulletVelocity={weapon.bulletVelocity}
+          />
         </div>
 
         <div className="border rounded-lg p-6">
