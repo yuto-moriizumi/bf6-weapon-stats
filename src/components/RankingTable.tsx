@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { calculateTTK } from '@/lib/ttk'
 
 type Damage = {
   distance: number
@@ -39,24 +40,13 @@ function calculateDPS(weapon: Weapon, distance: number): number {
   return (damage * weapon.fireRate) / 60
 }
 
-function calculateTTK(weapon: Weapon, distance: number): number {
-  if (weapon.damages.length === 0) return 0
-
-  const sortedDamages = [...weapon.damages].sort((a, b) => a.distance - b.distance)
-  
-  let damage = sortedDamages[0].damage
-  
-  for (let i = 0; i < sortedDamages.length; i++) {
-    if (sortedDamages[i].distance <= distance) {
-      damage = sortedDamages[i].damage
-    } else {
-      break
-    }
-  }
-  
-  const shotsToKill = Math.ceil(100 / damage)
-  const timeBetweenShots = 60000 / weapon.fireRate
-  return (shotsToKill - 1) * timeBetweenShots
+function calculateWeaponTTK(weapon: Weapon, distance: number): number {
+  return calculateTTK(
+    weapon.damages,
+    distance,
+    weapon.bulletVelocity,
+    weapon.fireRate
+  )
 }
 
 export default function RankingTable({ weapons }: { weapons: Weapon[] }) {
@@ -77,7 +67,7 @@ export default function RankingTable({ weapons }: { weapons: Weapon[] }) {
       .map(weapon => ({
         ...weapon,
         dps: calculateDPS(weapon, distance),
-        ttk: calculateTTK(weapon, distance)
+        ttk: calculateWeaponTTK(weapon, distance)
       }))
       .sort((a, b) => a.ttk - b.ttk)
   }, [weapons, distance])
