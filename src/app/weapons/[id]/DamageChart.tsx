@@ -18,10 +18,28 @@ type Damage = {
 };
 
 export default function DamageChart({ damages }: { damages: Damage[] }) {
-  const data = damages.map((d) => ({
+  // Sort damages by distance
+  const sortedDamages = [...damages].sort((a, b) => a.distance - b.distance);
+
+  const data = sortedDamages.map((d) => ({
     distance: d.distance,
     damage: d.damage,
   }));
+
+  // Add endpoint to ensure at least 100m is displayed
+  const maxDistance =
+    sortedDamages.length > 0
+      ? Math.max(...sortedDamages.map((d) => d.distance))
+      : 0;
+  const endDistance = Math.max(maxDistance + 50, 100);
+  
+  // Only add endpoint if it's beyond the last data point
+  if (sortedDamages.length > 0 && endDistance > maxDistance) {
+    data.push({
+      distance: endDistance,
+      damage: sortedDamages[sortedDamages.length - 1].damage,
+    });
+  }
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -43,6 +61,7 @@ export default function DamageChart({ damages }: { damages: Damage[] }) {
         <YAxis
           label={{ value: "Damage", angle: -90, position: "insideLeft" }}
         />
+        <Tooltip />
         <Legend />
         <Line
           type="stepAfter"
