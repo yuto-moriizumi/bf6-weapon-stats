@@ -98,6 +98,7 @@ export default function TTKChart({
         <YAxis
           label={{ value: "TTK (ms)", angle: -90, position: "insideLeft" }}
         />
+        <Tooltip />
         <Legend />
         <Line type="linear" dataKey="ttk" stroke="#ef4444" strokeWidth={2} />
       </LineChart>
