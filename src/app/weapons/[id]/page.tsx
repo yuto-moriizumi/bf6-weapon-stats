@@ -4,6 +4,18 @@ import DamageChart from './DamageChart'
 import TTKChart from './TTKChart'
 import Link from 'next/link'
 
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  const weapons = await prisma.weapon.findMany({
+    select: { id: true }
+  })
+  
+  return weapons.map((weapon) => ({
+    id: weapon.id.toString()
+  }))
+}
+
 async function getWeapon(id: number) {
   const weapon = await prisma.weapon.findUnique({
     where: { id },

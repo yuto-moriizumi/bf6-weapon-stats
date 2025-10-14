@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import RankingTable from "@/components/RankingTable";
 import Link from "next/link";
 
-export const revalidate = 60;
+export const dynamic = 'force-static';
 
 async function getWeaponsWithDamages() {
   const weapons = await prisma.weapon.findMany({
