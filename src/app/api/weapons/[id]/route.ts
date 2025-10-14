@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(
@@ -68,6 +69,9 @@ export async function PUT(
       }
     })
 
+    revalidatePath('/')
+    revalidatePath(`/weapons/${id}`)
+
     return NextResponse.json(weapon)
   } catch (error) {
     console.error(error)
@@ -86,6 +90,9 @@ export async function DELETE(
         id: parseInt(id)
       }
     })
+
+    revalidatePath('/')
+    revalidatePath(`/weapons/${id}`)
 
     return NextResponse.json({ success: true })
   } catch (error) {
