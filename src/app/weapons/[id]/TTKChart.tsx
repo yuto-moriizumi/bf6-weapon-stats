@@ -16,18 +16,31 @@ type TTKChartProps = {
 }
 
 export default function TTKChart({ damages, fireRate, bulletVelocity }: TTKChartProps) {
-  // Calculate TTK for various distances
-  const maxDistance = Math.max(...damages.map(d => d.distance), 100)
+  // Sort damages by distance
+  const sortedDamages = [...damages].sort((a, b) => a.distance - b.distance)
+  
+  // Generate data points only at damage breakpoint edges
+  // TTK is linear within each damage range, so we only need edge points
   const data = []
   
-  // Generate data points for smooth TTK curve
-  for (let distance = 0; distance <= maxDistance; distance += 5) {
-    const ttk = calculateTTK(damages, distance, bulletVelocity, fireRate)
+  // Add point at each damage breakpoint (including distance 0)
+  for (let i = 0; i < sortedDamages.length; i++) {
+    const distance = sortedDamages[i].distance
     data.push({
-      distance,
-      ttk: Math.round(ttk)
+      distance: distance,
+      ttk: Math.round(calculateTTK(sortedDamages, distance, bulletVelocity, fireRate))
     })
   }
+  
+  // Add endpoint at max distance + buffer to show the extended line
+  const maxDistance = sortedDamages.length > 0 
+    ? Math.max(...sortedDamages.map(d => d.distance))
+    : 0
+  const endDistance = Math.max(maxDistance + 50, 100)
+  data.push({
+    distance: endDistance,
+    ttk: Math.round(calculateTTK(sortedDamages, endDistance, bulletVelocity, fireRate))
+  })
 
   return (
     <ResponsiveContainer width="100%" height={400}>
