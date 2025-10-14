@@ -18,8 +18,18 @@ async function getWeaponsWithDamages() {
   return weapons;
 }
 
+async function getCategories() {
+  const categories = await prisma.weaponCategory.findMany({
+    orderBy: {
+      name: "asc",
+    },
+  });
+  return categories;
+}
+
 export default async function Home() {
   const weapons = await getWeaponsWithDamages();
+  const categories = await getCategories();
 
   return (
     <div className="min-h-screen p-8">
@@ -34,7 +44,7 @@ export default async function Home() {
           </Link>
         </div>
 
-        <RankingTable weapons={weapons} />
+        <RankingTable weapons={weapons} categories={categories} />
       </div>
     </div>
   );

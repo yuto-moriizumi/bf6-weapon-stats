@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "db:seed": "tsx prisma/seed.ts"
   },
   "prisma": {
@@ -30,6 +32,7 @@
     "dotenv-cli": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5"
