@@ -65,16 +65,11 @@ export default function TTKChart({
     });
   }
 
-  // Add endpoint at max distance + buffer
-  const maxDistance =
-    sortedDamages.length > 0
-      ? Math.max(...sortedDamages.map((d) => d.distance))
-      : 0;
-  const endDistance = Math.max(maxDistance + 50, 100);
+  // Add endpoint at 100m
   data.push({
-    distance: endDistance,
+    distance: 100,
     ttk: Math.round(
-      calculateTTK(sortedDamages, endDistance, bulletVelocity, fireRate)
+      calculateTTK(sortedDamages, 100, bulletVelocity, fireRate)
     ),
   });
 
@@ -88,7 +83,7 @@ export default function TTKChart({
         <XAxis
           dataKey="distance"
           type="number"
-          domain={[0, "dataMax"]}
+          domain={[0, 100]}
           label={{
             value: "Distance (m)",
             position: "insideBottom",
@@ -98,7 +93,15 @@ export default function TTKChart({
         <YAxis
           label={{ value: "TTK (ms)", angle: -90, position: "insideLeft" }}
         />
-        <Tooltip />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#1f2937",
+            border: "1px solid #374151",
+            borderRadius: "0.375rem",
+            color: "#f3f4f6",
+          }}
+          labelStyle={{ color: "#f3f4f6" }}
+        />
         <Legend />
         <Line type="linear" dataKey="ttk" stroke="#ef4444" strokeWidth={2} />
       </LineChart>

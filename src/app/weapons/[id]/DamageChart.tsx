@@ -6,9 +6,9 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   Legend,
   ResponsiveContainer,
+  Tooltip,
 } from "recharts";
 
 type Damage = {
@@ -18,10 +18,21 @@ type Damage = {
 };
 
 export default function DamageChart({ damages }: { damages: Damage[] }) {
-  const data = damages.map((d) => ({
+  const sortedDamages = [...damages].sort((a, b) => a.distance - b.distance);
+  const data = sortedDamages.map((d) => ({
     distance: d.distance,
     damage: d.damage,
   }));
+
+  if (
+    sortedDamages.length > 0 &&
+    sortedDamages[sortedDamages.length - 1].distance < 100
+  ) {
+    data.push({
+      distance: 100,
+      damage: sortedDamages[sortedDamages.length - 1].damage,
+    });
+  }
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -33,7 +44,7 @@ export default function DamageChart({ damages }: { damages: Damage[] }) {
         <XAxis
           dataKey="distance"
           type="number"
-          domain={[0, "dataMax"]}
+          domain={[0, 100]}
           label={{
             value: "Distance (m)",
             position: "insideBottom",
@@ -44,6 +55,15 @@ export default function DamageChart({ damages }: { damages: Damage[] }) {
           label={{ value: "Damage", angle: -90, position: "insideLeft" }}
         />
         <Legend />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#1f2937",
+            border: "1px solid #374151",
+            borderRadius: "0.375rem",
+            color: "#f3f4f6",
+          }}
+          labelStyle={{ color: "#f3f4f6" }}
+        />
         <Line
           type="stepAfter"
           dataKey="damage"
