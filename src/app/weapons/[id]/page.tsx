@@ -67,7 +67,7 @@ export default async function WeaponDetailPage({
         <h1 className="text-4xl font-bold mb-2">{weapon.name}</h1>
         <p className="text-gray-600 mb-8">{weapon.category.name}</p>
 
-        <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-4 gap-6 mb-8">
           <div className="border rounded-lg p-6">
             <p className="text-sm text-gray-500">Fire Rate</p>
             <p className="text-2xl font-semibold">{weapon.fireRate} RPM</p>
@@ -79,6 +79,12 @@ export default async function WeaponDetailPage({
           <div className="border rounded-lg p-6">
             <p className="text-sm text-gray-500">Reload Time</p>
             <p className="text-2xl font-semibold">{weapon.reloadTime}s</p>
+          </div>
+          <div className="border rounded-lg p-6">
+            <p className="text-sm text-gray-500">Bullet Velocity</p>
+            <p className="text-2xl font-semibold">
+              {weapon.bulletVelocity} m/s
+            </p>
           </div>
         </div>
 
