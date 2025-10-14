@@ -19,6 +19,7 @@ export default function EditWeaponPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  return null;
   const { id } = use(params);
   const router = useRouter();
   const [name, setName] = useState("");

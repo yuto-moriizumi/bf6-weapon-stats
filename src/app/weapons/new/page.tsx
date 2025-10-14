@@ -14,6 +14,7 @@ interface WeaponCategory {
 }
 
 export default function NewWeaponPage() {
+  return null;
   const router = useRouter();
   const [name, setName] = useState("");
   const [categoryId, setCategoryId] = useState("");
