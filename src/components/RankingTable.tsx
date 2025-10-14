@@ -51,16 +51,7 @@ function calculateWeaponTTK(weapon: Weapon, distance: number): number {
 
 export default function RankingTable({ weapons }: { weapons: Weapon[] }) {
   const [distance, setDistance] = useState(0)
-
-  const maxDistance = useMemo(() => {
-    let max = 0
-    weapons.forEach(weapon => {
-      weapon.damages.forEach(d => {
-        if (d.distance > max) max = d.distance
-      })
-    })
-    return max
-  }, [weapons])
+  const maxDistance = 100
 
   const rankedWeapons = useMemo(() => {
     return weapons
