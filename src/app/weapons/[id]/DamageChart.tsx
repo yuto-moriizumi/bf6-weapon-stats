@@ -28,7 +28,7 @@ export default function DamageChart({ damages }: { damages: Damage[] }) {
         <Tooltip />
         <Legend />
         <Line 
-          type="monotone" 
+          type="stepAfter" 
           dataKey="damage" 
           stroke="#3b82f6" 
           strokeWidth={2}
