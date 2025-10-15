@@ -9,6 +9,12 @@ interface DamageEntry {
   damage: number;
 }
 
+interface LoadoutEntry {
+  id?: number;
+  name: string;
+  bulletVelocity: number;
+}
+
 interface WeaponCategory {
   id: number;
   name: string;
@@ -24,6 +30,9 @@ export default function EditWeaponForm({ weaponId }: { weaponId: string }) {
   const [reloadTime, setReloadTime] = useState("");
   const [damages, setDamages] = useState<DamageEntry[]>([
     { distance: 0, damage: 0 },
+  ]);
+  const [loadouts, setLoadouts] = useState<LoadoutEntry[]>([
+    { name: "", bulletVelocity: 0 },
   ]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -44,6 +53,7 @@ export default function EditWeaponForm({ weaponId }: { weaponId: string }) {
           setMagazine(weaponData.magazine.toString());
           setReloadTime(weaponData.reloadTime.toString());
           setDamages(weaponData.damages || [{ distance: 0, damage: 0 }]);
+          setLoadouts(weaponData.loadouts || [{ name: "", bulletVelocity: 0 }]);
         }
       })
       .catch((err) => console.error(err))
@@ -66,6 +76,24 @@ export default function EditWeaponForm({ weaponId }: { weaponId: string }) {
     const newDamages = [...damages];
     newDamages[index][field] = value;
     setDamages(newDamages);
+  };
+
+  const addLoadoutEntry = () => {
+    setLoadouts([...loadouts, { name: "", bulletVelocity: 0 }]);
+  };
+
+  const removeLoadoutEntry = (index: number) => {
+    setLoadouts(loadouts.filter((_, i) => i !== index));
+  };
+
+  const updateLoadoutEntry = (
+    index: number,
+    field: "name" | "bulletVelocity",
+    value: string | number,
+  ) => {
+    const newLoadouts = [...loadouts];
+    newLoadouts[index][field] = value as never;
+    setLoadouts(newLoadouts);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,6 +121,11 @@ export default function EditWeaponForm({ weaponId }: { weaponId: string }) {
             id: d.id,
             distance: d.distance,
             damage: d.damage,
+          })),
+          loadouts: loadouts.map((l) => ({
+            id: l.id,
+            name: l.name,
+            bulletVelocity: l.bulletVelocity,
           })),
         }),
       });
@@ -245,6 +278,67 @@ export default function EditWeaponForm({ weaponId }: { weaponId: string }) {
                   <button
                     type="button"
                     onClick={() => removeDamageEntry(index)}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Loadouts</h2>
+              <button
+                type="button"
+                onClick={addLoadoutEntry}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                + Add Loadout
+              </button>
+            </div>
+
+            {loadouts.map((entry, index) => (
+              <div key={index} className="flex gap-4 mb-3">
+                <div className="flex-1">
+                  <label className="block mb-1 text-sm font-medium">
+                    Loadout Name
+                  </label>
+                  <input
+                    type="text"
+                    value={entry.name}
+                    onChange={(e) =>
+                      updateLoadoutEntry(index, "name", e.target.value)
+                    }
+                    placeholder="Loadout Name"
+                    required
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block mb-1 text-sm font-medium">
+                    Bullet Velocity (m/s)
+                  </label>
+                  <input
+                    type="number"
+                    value={entry.bulletVelocity}
+                    onChange={(e) =>
+                      updateLoadoutEntry(
+                        index,
+                        "bulletVelocity",
+                        parseFloat(e.target.value),
+                      )
+                    }
+                    placeholder="Bullet Velocity"
+                    required
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                {loadouts.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeLoadoutEntry(index)}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
                     Remove

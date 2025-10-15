@@ -93,12 +93,10 @@ export default async function WeaponDetailPage({
             {weapon.loadouts.map((loadout) => (
               <div
                 key={loadout.id}
-                className="flex justify-between items-center p-3 bg-gray-50 rounded"
+                className="flex justify-between items-center p-3 border border-white rounded"
               >
-                <span className="font-medium">{loadout.name}</span>
-                <span className="text-gray-600">
-                  {loadout.bulletVelocity} m/s
-                </span>
+                <span className="font-medium text-white">{loadout.name}</span>
+                <span className="text-white">{loadout.bulletVelocity} m/s</span>
               </div>
             ))}
           </div>

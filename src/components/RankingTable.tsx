@@ -93,7 +93,7 @@ export default function RankingTable({
   };
 
   const rankedWeapons = useMemo(() => {
-    return weapons
+    const expanded = weapons
       .filter((weapon) => selectedCategories.has(weapon.category.id))
       .flatMap((weapon) =>
         weapon.loadouts.map((loadout) => ({
@@ -104,6 +104,41 @@ export default function RankingTable({
         })),
       )
       .sort((a, b) => a.ttk - b.ttk);
+
+    const grouped: Array<{
+      id: number;
+      name: string;
+      category: { id: number; name: string };
+      fireRate: number;
+      bulletVelocity: number;
+      dps: number;
+      ttk: number;
+      loadoutNames: string[];
+    }> = [];
+
+    for (const entry of expanded) {
+      const lastGroup = grouped[grouped.length - 1];
+      if (
+        lastGroup &&
+        lastGroup.id === entry.id &&
+        lastGroup.bulletVelocity === entry.loadout.bulletVelocity
+      ) {
+        lastGroup.loadoutNames.push(entry.loadout.name);
+      } else {
+        grouped.push({
+          id: entry.id,
+          name: entry.name,
+          category: entry.category,
+          fireRate: entry.fireRate,
+          bulletVelocity: entry.loadout.bulletVelocity,
+          dps: entry.dps,
+          ttk: entry.ttk,
+          loadoutNames: [entry.loadout.name],
+        });
+      }
+    }
+
+    return grouped;
   }, [weapons, distance, selectedCategories]);
 
   return (
@@ -163,7 +198,7 @@ export default function RankingTable({
                 Weapon
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                Loadout
+                Barrel
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 Category
@@ -184,10 +219,7 @@ export default function RankingTable({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {rankedWeapons.map((entry, index) => (
-              <tr
-                key={`${entry.id}-${entry.loadout.id}`}
-                className="hover:bg-gray-50"
-              >
+              <tr key={`${entry.id}-${index}`} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {index + 1}
                 </td>
@@ -200,7 +232,7 @@ export default function RankingTable({
                   </Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {entry.loadout.name}
+                  {entry.loadoutNames.join(", ")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {entry.category.name}
@@ -209,7 +241,7 @@ export default function RankingTable({
                   {entry.fireRate} RPM
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {entry.loadout.bulletVelocity} m/s
+                  {entry.bulletVelocity} m/s
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                   {entry.dps.toFixed(1)}

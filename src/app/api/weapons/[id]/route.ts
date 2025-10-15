@@ -47,9 +47,23 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, categoryId, fireRate, magazine, reloadTime, damages } = body;
+    const {
+      name,
+      categoryId,
+      fireRate,
+      magazine,
+      reloadTime,
+      damages,
+      loadouts,
+    } = body;
 
     await prisma.damage.deleteMany({
+      where: {
+        weaponId: parseInt(id),
+      },
+    });
+
+    await prisma.loadout.deleteMany({
       where: {
         weaponId: parseInt(id),
       },
@@ -70,6 +84,14 @@ export async function PUT(
             distance: d.distance,
             damage: d.damage,
           })),
+        },
+        loadouts: {
+          create: loadouts.map(
+            (l: { name: string; bulletVelocity: number }) => ({
+              name: l.name,
+              bulletVelocity: l.bulletVelocity,
+            }),
+          ),
         },
       },
       include: {
