@@ -36,7 +36,6 @@ async function main() {
       fireRate: 600,
       magazine: 30,
       reloadTime: 2.5,
-      bulletVelocity: 715,
       damages: {
         create: [
           { distance: 0, damage: 28 },
@@ -45,6 +44,12 @@ async function main() {
           { distance: 60, damage: 18 },
           { distance: 80, damage: 15 },
         ],
+      },
+      loadouts: {
+        create: {
+          name: "Default",
+          bulletVelocity: 715,
+        },
       },
     },
   });
@@ -56,7 +61,6 @@ async function main() {
       fireRate: 800,
       magazine: 30,
       reloadTime: 2.3,
-      bulletVelocity: 900,
       damages: {
         create: [
           { distance: 0, damage: 24 },
@@ -65,6 +69,12 @@ async function main() {
           { distance: 60, damage: 16 },
           { distance: 80, damage: 13 },
         ],
+      },
+      loadouts: {
+        create: {
+          name: "Default",
+          bulletVelocity: 900,
+        },
       },
     },
   });
@@ -76,7 +86,6 @@ async function main() {
       fireRate: 50,
       magazine: 5,
       reloadTime: 3.8,
-      bulletVelocity: 900,
       damages: {
         create: [
           { distance: 0, damage: 120 },
@@ -85,6 +94,12 @@ async function main() {
           { distance: 150, damage: 85 },
           { distance: 200, damage: 70 },
         ],
+      },
+      loadouts: {
+        create: {
+          name: "Default",
+          bulletVelocity: 900,
+        },
       },
     },
   });

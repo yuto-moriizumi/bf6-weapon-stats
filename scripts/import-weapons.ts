@@ -94,7 +94,6 @@ async function main() {
         fireRate: weaponData.rpm,
         magazine: weaponData.magazine,
         reloadTime: weaponData.reloadSpeed,
-        bulletVelocity: weaponData.bulletVelocity,
       },
       create: {
         name: weaponData.name,
@@ -102,11 +101,29 @@ async function main() {
         fireRate: weaponData.rpm,
         magazine: weaponData.magazine,
         reloadTime: weaponData.reloadSpeed,
-        bulletVelocity: weaponData.bulletVelocity,
       },
     });
 
     console.log(`  Upserted weapon: ${weapon.name}`);
+
+    await prisma.loadout.upsert({
+      where: {
+        weaponId_name: {
+          weaponId: weapon.id,
+          name: "Default",
+        },
+      },
+      update: {
+        bulletVelocity: weaponData.bulletVelocity,
+      },
+      create: {
+        weaponId: weapon.id,
+        name: "Default",
+        bulletVelocity: weaponData.bulletVelocity,
+      },
+    });
+
+    console.log(`  Upserted default loadout`);
 
     for (const damageData of weaponData.damages) {
       await prisma.damage.upsert({

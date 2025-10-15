@@ -9,14 +9,20 @@ type Damage = {
   damage: number;
 };
 
+type Loadout = {
+  id: number;
+  name: string;
+  bulletVelocity: number;
+};
+
 type Weapon = {
   id: number;
   name: string;
   fireRate: number;
   magazine: number;
   reloadTime: number;
-  bulletVelocity: number;
   damages: Damage[];
+  loadouts: Loadout[];
   category: {
     id: number;
     name: string;
@@ -48,11 +54,15 @@ function calculateDPS(weapon: Weapon, distance: number): number {
   return (damage * weapon.fireRate) / 60;
 }
 
-function calculateWeaponTTK(weapon: Weapon, distance: number): number {
+function calculateWeaponTTK(
+  weapon: Weapon,
+  distance: number,
+  loadout: Loadout,
+): number {
   return calculateTTK(
     weapon.damages,
     distance,
-    weapon.bulletVelocity,
+    loadout.bulletVelocity,
     weapon.fireRate,
   );
 }
@@ -85,11 +95,14 @@ export default function RankingTable({
   const rankedWeapons = useMemo(() => {
     return weapons
       .filter((weapon) => selectedCategories.has(weapon.category.id))
-      .map((weapon) => ({
-        ...weapon,
-        dps: calculateDPS(weapon, distance),
-        ttk: calculateWeaponTTK(weapon, distance),
-      }))
+      .flatMap((weapon) =>
+        weapon.loadouts.map((loadout) => ({
+          ...weapon,
+          loadout,
+          dps: calculateDPS(weapon, distance),
+          ttk: calculateWeaponTTK(weapon, distance, loadout),
+        })),
+      )
       .sort((a, b) => a.ttk - b.ttk);
   }, [weapons, distance, selectedCategories]);
 
@@ -150,6 +163,9 @@ export default function RankingTable({
                 Weapon
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Loadout
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 Category
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
@@ -167,33 +183,39 @@ export default function RankingTable({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {rankedWeapons.map((weapon, index) => (
-              <tr key={weapon.id} className="hover:bg-gray-50">
+            {rankedWeapons.map((entry, index) => (
+              <tr
+                key={`${entry.id}-${entry.loadout.id}`}
+                className="hover:bg-gray-50"
+              >
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {index + 1}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Link
-                    href={`/weapons/${weapon.id}`}
+                    href={`/weapons/${entry.id}`}
                     className="text-blue-500 hover:text-blue-600 font-medium"
                   >
-                    {weapon.name}
+                    {entry.name}
                   </Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {weapon.category.name}
+                  {entry.loadout.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {weapon.fireRate} RPM
+                  {entry.category.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {weapon.bulletVelocity} m/s
+                  {entry.fireRate} RPM
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {entry.loadout.bulletVelocity} m/s
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                  {weapon.dps.toFixed(1)}
+                  {entry.dps.toFixed(1)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                  {weapon.ttk.toFixed(0)}
+                  {entry.ttk.toFixed(0)}
                 </td>
               </tr>
             ))}

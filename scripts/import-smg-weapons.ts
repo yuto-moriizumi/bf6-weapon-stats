@@ -109,10 +109,18 @@ async function main() {
           fireRate: weaponData.rpm,
           magazine: weaponData.magazine,
           reloadTime: weaponData.reloadSpeed,
-          bulletVelocity: weaponData.bulletVelocity,
         },
       });
       console.log(`  Created new weapon: ${weapon.name}`);
+
+      await prisma.loadout.create({
+        data: {
+          weaponId: weapon.id,
+          name: "Default",
+          bulletVelocity: weaponData.bulletVelocity,
+        },
+      });
+      console.log(`  Created default loadout`);
     }
 
     for (const damageData of weaponData.damages) {

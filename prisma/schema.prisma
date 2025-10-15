@@ -18,17 +18,29 @@ model Damage {
 }
 
 model Weapon {
-  id             Int            @id @default(autoincrement())
-  name           String         @unique
-  fireRate       Int
-  magazine       Int
-  reloadTime     Float
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id         Int            @id @default(autoincrement())
+  name       String         @unique
+  fireRate   Int
+  magazine   Int
+  reloadTime Float
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  categoryId Int
+  damages    Damage[]
+  loadouts   Loadout[]
+  category   WeaponCategory @relation(fields: [categoryId], references: [id])
+}
+
+model Loadout {
+  id             Int      @id @default(autoincrement())
+  weaponId       Int
+  name           String
   bulletVelocity Float
-  categoryId     Int
-  damages        Damage[]
-  category       WeaponCategory @relation(fields: [categoryId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  weapon         Weapon   @relation(fields: [weaponId], references: [id], onDelete: Cascade)
+
+  @@unique([weaponId, name])
 }
 
 model WeaponCategory {

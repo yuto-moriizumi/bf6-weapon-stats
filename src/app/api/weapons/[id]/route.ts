@@ -18,6 +18,11 @@ export async function GET(
             distance: "asc",
           },
         },
+        loadouts: {
+          orderBy: {
+            name: "asc",
+          },
+        },
       },
     });
 
@@ -69,6 +74,7 @@ export async function PUT(
       },
       include: {
         damages: true,
+        loadouts: true,
       },
     });
 

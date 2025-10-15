@@ -12,6 +12,11 @@ async function getWeaponsWithDamages() {
           distance: "asc",
         },
       },
+      loadouts: {
+        orderBy: {
+          name: "asc",
+        },
+      },
       category: true,
     },
   });
