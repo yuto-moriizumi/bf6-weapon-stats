@@ -1,7 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import WeaponForm, { WeaponCategory } from "@/components/WeaponForm";
+import WeaponForm, {
+  WeaponCategory,
+  WeaponFormData,
+} from "@/components/WeaponForm";
 
 interface Weapon {
   id: number;
@@ -20,16 +23,6 @@ interface Weapon {
     name: string;
     bulletVelocity: number;
   }>;
-}
-
-interface WeaponFormData {
-  name: string;
-  categoryId: number;
-  fireRate: number;
-  magazine: number;
-  reloadTime: number;
-  damages: { id?: number; distance: number; damage: number }[];
-  loadouts: { id?: number; name: string; bulletVelocity: number }[];
 }
 
 export default function EditWeaponForm({
