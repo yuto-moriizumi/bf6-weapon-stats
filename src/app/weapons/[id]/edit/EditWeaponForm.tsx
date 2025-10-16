@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import WeaponForm from "@/components/WeaponForm";
+import WeaponForm, { WeaponCategory } from "@/components/WeaponForm";
 
 interface Weapon {
   id: number;
@@ -33,16 +33,16 @@ interface WeaponFormData {
 }
 
 export default function EditWeaponForm({
-  weaponId,
   weapon,
+  categories,
 }: {
-  weaponId: string;
   weapon: Weapon;
+  categories: WeaponCategory[];
 }) {
   const router = useRouter();
 
   const handleSubmit = async (data: WeaponFormData) => {
-    const response = await fetch(`/api/weapons/${weaponId}`, {
+    const response = await fetch(`/api/weapons/${weapon.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export default function EditWeaponForm({
     });
 
     if (response.ok) {
-      router.push(`/weapons/${weaponId}`);
+      router.push(`/weapons/${weapon.id}`);
       router.refresh();
     } else {
       alert("Failed to update weapon");
@@ -73,6 +73,7 @@ export default function EditWeaponForm({
             damages: weapon.damages,
             loadouts: weapon.loadouts,
           }}
+          categories={categories}
         />
       </div>
     </div>

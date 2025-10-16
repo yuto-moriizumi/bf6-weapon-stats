@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import WeaponForm from "@/components/WeaponForm";
+import WeaponForm, { WeaponCategory } from "@/components/WeaponForm";
 
 interface WeaponFormData {
   name: string;
@@ -13,7 +13,11 @@ interface WeaponFormData {
   loadouts: { id?: number; name: string; bulletVelocity: number }[];
 }
 
-export default function NewWeaponForm() {
+export default function NewWeaponForm({
+  categories,
+}: {
+  categories: WeaponCategory[];
+}) {
   const router = useRouter();
 
   const handleSubmit = async (data: WeaponFormData) => {
@@ -47,7 +51,11 @@ export default function NewWeaponForm() {
     <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Add New Weapon</h1>
-        <WeaponForm initialData={initialData} onSubmit={handleSubmit} />
+        <WeaponForm
+          initialData={initialData}
+          onSubmit={handleSubmit}
+          categories={categories}
+        />
       </div>
     </div>
   );

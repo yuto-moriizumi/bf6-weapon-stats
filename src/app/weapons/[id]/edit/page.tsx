@@ -48,5 +48,9 @@ export default async function EditWeaponPage({
     );
   }
 
-  return <EditWeaponForm weaponId={id} weapon={weapon} />;
+  const categories = await prisma.weaponCategory.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  return <EditWeaponForm weapon={weapon} categories={categories} />;
 }
