@@ -33,11 +33,21 @@ export default function NewWeaponForm() {
     }
   };
 
+  const initialData: WeaponFormData = {
+    name: "",
+    categoryId: 0,
+    fireRate: 0,
+    magazine: 0,
+    reloadTime: 0,
+    damages: [{ distance: 0, damage: 0 }],
+    loadouts: [{ name: "Default", bulletVelocity: 0 }],
+  };
+
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Add New Weapon</h1>
-        <WeaponForm onSubmit={handleSubmit} />
+        <WeaponForm initialData={initialData} onSubmit={handleSubmit} />
       </div>
     </div>
   );

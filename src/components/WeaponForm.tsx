@@ -31,31 +31,25 @@ interface WeaponFormData {
 }
 
 interface WeaponFormProps {
-  initialData?: WeaponFormData;
+  initialData: WeaponFormData;
   onSubmit: (data: WeaponFormData) => Promise<void>;
 }
 
 export default function WeaponForm({ initialData, onSubmit }: WeaponFormProps) {
   const router = useRouter();
-  const [name, setName] = useState(initialData?.name || "");
+  const [name, setName] = useState(initialData.name);
   const [categoryId, setCategoryId] = useState(
-    initialData?.categoryId.toString() || "",
+    initialData.categoryId.toString(),
   );
   const [categories, setCategories] = useState<WeaponCategory[]>([]);
-  const [fireRate, setFireRate] = useState(
-    initialData?.fireRate.toString() || "",
-  );
-  const [magazine, setMagazine] = useState(
-    initialData?.magazine.toString() || "",
-  );
+  const [fireRate, setFireRate] = useState(initialData.fireRate.toString());
+  const [magazine, setMagazine] = useState(initialData.magazine.toString());
   const [reloadTime, setReloadTime] = useState(
-    initialData?.reloadTime.toString() || "",
+    initialData.reloadTime.toString(),
   );
-  const [damages, setDamages] = useState<DamageEntry[]>(
-    initialData?.damages || [{ distance: 0, damage: 0 }],
-  );
+  const [damages, setDamages] = useState<DamageEntry[]>(initialData.damages);
   const [loadouts, setLoadouts] = useState<LoadoutEntry[]>(
-    initialData?.loadouts || [{ name: "", bulletVelocity: 0 }],
+    initialData.loadouts,
   );
   const [loading, setLoading] = useState(false);
 
