@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import EditWeaponForm from "./EditWeaponForm";
 import { ALLOWED_DISCORD_ID } from "@/lib/constants";
+import { prisma } from "@/lib/prisma";
 
 export default async function EditWeaponPage({
   params,
@@ -29,5 +30,27 @@ export default async function EditWeaponPage({
 
   const { id } = await params;
 
-  return <EditWeaponForm weaponId={id} />;
+  const weapon = await prisma.weapon.findUnique({
+    where: { id: parseInt(id) },
+    include: {
+      damages: {
+        orderBy: { distance: "asc" },
+      },
+      loadouts: true,
+    },
+  });
+
+  if (!weapon) {
+    return (
+      <div className="min-h-screen p-8 flex items-center justify-center">
+        <div className="text-xl">Weapon not found</div>
+      </div>
+    );
+  }
+
+  const categories = await prisma.weaponCategory.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  return <EditWeaponForm weapon={weapon} categories={categories} />;
 }

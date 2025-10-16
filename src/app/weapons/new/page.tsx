@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { ALLOWED_DISCORD_ID } from "@/lib/constants";
+import { prisma } from "@/lib/prisma";
 import NewWeaponForm from "./NewWeaponForm";
 
 export default async function NewWeaponPage() {
@@ -23,5 +24,9 @@ export default async function NewWeaponPage() {
     );
   }
 
-  return <NewWeaponForm />;
+  const categories = await prisma.weaponCategory.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  return <NewWeaponForm categories={categories} />;
 }

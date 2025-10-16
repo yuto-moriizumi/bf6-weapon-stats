@@ -1,406 +1,309 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-interface DamageEntry {
-  id?: number;
-  distance: number;
-  damage: number;
-}
+const damageEntrySchema = z.object({
+  id: z.number().optional(),
+  distance: z.number().min(0, "Distance must be non-negative"),
+  damage: z.number().min(1, "Damage must be at least 1"),
+});
 
-interface LoadoutEntry {
-  id?: number;
-  name: string;
-  bulletVelocity: number;
-}
+const loadoutEntrySchema = z.object({
+  id: z.number().optional(),
+  name: z.string().min(1, "Loadout name is required"),
+  bulletVelocity: z.number().min(1, "Bullet velocity must be at least 1"),
+});
 
-interface WeaponCategory {
+const weaponFormSchema = z.object({
+  name: z.string().min(1, "Weapon name is required"),
+  categoryId: z.number().min(1, "Category is required"),
+  fireRate: z.number().min(1, "Fire rate must be at least 1"),
+  magazine: z.number().min(1, "Magazine must be at least 1"),
+  reloadTime: z.number().min(0.1, "Reload time must be at least 0.1"),
+  damages: z
+    .array(damageEntrySchema)
+    .min(1, "At least one damage entry is required"),
+  loadouts: z
+    .array(loadoutEntrySchema)
+    .min(1, "At least one loadout is required"),
+});
+
+export type WeaponFormData = z.infer<typeof weaponFormSchema>;
+
+export interface WeaponCategory {
   id: number;
   name: string;
 }
 
 interface WeaponFormProps {
-  mode: "create" | "edit";
-  weaponId?: string;
+  initialData: WeaponFormData;
+  onSubmit: (data: WeaponFormData) => Promise<void>;
+  categories: WeaponCategory[];
 }
 
-export default function WeaponForm({ mode, weaponId }: WeaponFormProps) {
+export default function WeaponForm({
+  initialData,
+  onSubmit,
+  categories,
+}: WeaponFormProps) {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [categories, setCategories] = useState<WeaponCategory[]>([]);
-  const [fireRate, setFireRate] = useState("");
-  const [magazine, setMagazine] = useState("");
-  const [reloadTime, setReloadTime] = useState("");
-  const [damages, setDamages] = useState<DamageEntry[]>([
-    { distance: 0, damage: 0 },
-  ]);
-  const [loadouts, setLoadouts] = useState<LoadoutEntry[]>([
-    { name: "", bulletVelocity: 0 },
-  ]);
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(mode === "edit");
 
-  useEffect(() => {
-    if (mode === "edit" && weaponId) {
-      Promise.all([
-        fetch("/api/weapons?type=categories").then((res) => res.json()),
-        fetch(`/api/weapons/${weaponId}`).then((res) => res.json()),
-      ])
-        .then(([categoriesData, weaponData]) => {
-          if (Array.isArray(categoriesData)) {
-            setCategories(categoriesData);
-          }
-          if (weaponData) {
-            setName(weaponData.name);
-            setCategoryId(weaponData.categoryId.toString());
-            setFireRate(weaponData.fireRate.toString());
-            setMagazine(weaponData.magazine.toString());
-            setReloadTime(weaponData.reloadTime.toString());
-            setDamages(weaponData.damages || [{ distance: 0, damage: 0 }]);
-            setLoadouts(
-              weaponData.loadouts || [{ name: "", bulletVelocity: 0 }],
-            );
-          }
-        })
-        .catch((err) => console.error(err))
-        .finally(() => setInitialLoading(false));
-    } else {
-      fetch("/api/weapons?type=categories")
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setCategories(data);
-          }
-        })
-        .catch((err) => console.error(err));
-    }
-  }, [mode, weaponId]);
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<WeaponFormData>({
+    resolver: zodResolver(weaponFormSchema),
+    defaultValues: initialData,
+  });
 
-  const addDamageEntry = () => {
-    setDamages([...damages, { distance: 0, damage: 0 }]);
-  };
+  const {
+    fields: damageFields,
+    append: appendDamage,
+    remove: removeDamage,
+  } = useFieldArray({ control, name: "damages" });
 
-  const removeDamageEntry = (index: number) => {
-    setDamages(damages.filter((_, i) => i !== index));
-  };
+  const {
+    fields: loadoutFields,
+    append: appendLoadout,
+    remove: removeLoadout,
+  } = useFieldArray({ control, name: "loadouts" });
 
-  const updateDamageEntry = (
-    index: number,
-    field: "distance" | "damage",
-    value: number,
-  ) => {
-    const newDamages = [...damages];
-    newDamages[index][field] = value;
-    setDamages(newDamages);
-  };
-
-  const addLoadoutEntry = () => {
-    setLoadouts([...loadouts, { name: "", bulletVelocity: 0 }]);
-  };
-
-  const removeLoadoutEntry = (index: number) => {
-    setLoadouts(loadouts.filter((_, i) => i !== index));
-  };
-
-  const updateLoadoutEntry = (
-    index: number,
-    field: "name" | "bulletVelocity",
-    value: string | number,
-  ) => {
-    const newLoadouts = [...loadouts];
-    newLoadouts[index][field] = value as never;
-    setLoadouts(newLoadouts);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const selectedCategory = categories.find(
-      (c) => c.id === parseInt(categoryId),
-    );
-
-    const requestBody = {
-      name,
-      type: selectedCategory?.name || "",
-      categoryId: parseInt(categoryId),
-      fireRate: parseInt(fireRate),
-      magazine: parseInt(magazine),
-      reloadTime: parseFloat(reloadTime),
-      damages: damages.map((d) => ({
-        id: d.id,
-        distance: d.distance,
-        damage: d.damage,
-      })),
-      loadouts: loadouts.map((l) => ({
-        id: l.id,
-        name: l.name,
-        bulletVelocity: l.bulletVelocity,
-      })),
-    };
-
+  const onFormSubmit = async (data: WeaponFormData) => {
     try {
-      const url =
-        mode === "create" ? "/api/weapons" : `/api/weapons/${weaponId}`;
-      const method = mode === "create" ? "POST" : "PUT";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        const redirectPath = mode === "create" ? "/" : `/weapons/${weaponId}`;
-        router.push(redirectPath);
-        router.refresh();
-      } else {
-        alert(`Failed to ${mode} weapon`);
-      }
+      await onSubmit(data);
     } catch (error) {
       console.error(error);
-      alert(`Error ${mode === "create" ? "creating" : "updating"} weapon`);
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (initialLoading) {
-    return (
-      <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-  const title = mode === "create" ? "Add New Weapon" : "Edit Weapon";
-  const submitButtonText = loading
-    ? mode === "create"
-      ? "Creating..."
-      : "Updating..."
-    : mode === "create"
-      ? "Create Weapon"
-      : "Update Weapon";
-  const cancelPath = mode === "create" ? "/" : `/weapons/${weaponId}`;
-
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">{title}</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block mb-2 font-medium">Weapon Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full p-2 border rounded"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 font-medium">Category</label>
-            <select
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              required
-              className="w-full p-2 border rounded"
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block mb-2 font-medium">Fire Rate (RPM)</label>
-              <input
-                type="number"
-                value={fireRate}
-                onChange={(e) => setFireRate(e.target.value)}
-                required
-                className="w-full p-2 border rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium">Magazine</label>
-              <input
-                type="number"
-                value={magazine}
-                onChange={(e) => setMagazine(e.target.value)}
-                required
-                className="w-full p-2 border rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium">Reload Time (s)</label>
-              <input
-                type="number"
-                step="0.1"
-                value={reloadTime}
-                onChange={(e) => setReloadTime(e.target.value)}
-                required
-                className="w-full p-2 border rounded"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Damage by Distance</h2>
-              <button
-                type="button"
-                onClick={addDamageEntry}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                + Add Distance
-              </button>
-            </div>
-
-            {damages.map((entry, index) => (
-              <div key={index} className="flex gap-4 mb-3">
-                <div className="flex-1">
-                  <label className="block mb-1 text-sm font-medium">
-                    Distance (m)
-                  </label>
-                  <input
-                    type="number"
-                    value={entry.distance}
-                    onChange={(e) =>
-                      updateDamageEntry(
-                        index,
-                        "distance",
-                        parseInt(e.target.value),
-                      )
-                    }
-                    placeholder="Distance (m)"
-                    required
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="block mb-1 text-sm font-medium">
-                    Damage
-                  </label>
-                  <input
-                    type="number"
-                    value={entry.damage}
-                    onChange={(e) =>
-                      updateDamageEntry(
-                        index,
-                        "damage",
-                        parseInt(e.target.value),
-                      )
-                    }
-                    placeholder="Damage"
-                    required
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-                {damages.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeDamageEntry(index)}
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Loadouts</h2>
-              <button
-                type="button"
-                onClick={addLoadoutEntry}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                + Add Loadout
-              </button>
-            </div>
-
-            {loadouts.map((entry, index) => (
-              <div key={index} className="flex gap-4 mb-3">
-                <div className="flex-1">
-                  <label className="block mb-1 text-sm font-medium">
-                    Loadout Name
-                  </label>
-                  <input
-                    type="text"
-                    value={entry.name}
-                    onChange={(e) =>
-                      updateLoadoutEntry(index, "name", e.target.value)
-                    }
-                    placeholder="Loadout Name"
-                    required
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="block mb-1 text-sm font-medium">
-                    Bullet Velocity (m/s)
-                  </label>
-                  <input
-                    type="number"
-                    value={entry.bulletVelocity}
-                    onChange={(e) =>
-                      updateLoadoutEntry(
-                        index,
-                        "bulletVelocity",
-                        parseFloat(e.target.value),
-                      )
-                    }
-                    placeholder="Bullet Velocity"
-                    required
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-                {loadouts.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeLoadoutEntry(index)}
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-3 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
-            >
-              {submitButtonText}
-            </button>
-            <button
-              type="button"
-              onClick={() => router.push(cancelPath)}
-              className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+      <div>
+        <label className="block mb-2 font-medium">Weapon Name</label>
+        <input
+          {...register("name")}
+          type="text"
+          className="w-full p-2 border rounded"
+        />
+        {errors.name && (
+          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+        )}
       </div>
-    </div>
+
+      <div>
+        <label className="block mb-2 font-medium">Category</label>
+        <select
+          {...register("categoryId", { valueAsNumber: true })}
+          className="w-full p-2 border rounded"
+        >
+          <option value="">Select a category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        {errors.categoryId && (
+          <p className="mt-1 text-sm text-red-600">
+            {errors.categoryId.message}
+          </p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <label className="block mb-2 font-medium">Fire Rate (RPM)</label>
+          <input
+            {...register("fireRate", { valueAsNumber: true })}
+            type="number"
+            className="w-full p-2 border rounded"
+          />
+          {errors.fireRate && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.fireRate.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">Magazine</label>
+          <input
+            {...register("magazine", { valueAsNumber: true })}
+            type="number"
+            className="w-full p-2 border rounded"
+          />
+          {errors.magazine && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.magazine.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">Reload Time (s)</label>
+          <input
+            {...register("reloadTime", { valueAsNumber: true })}
+            type="number"
+            step="0.1"
+            className="w-full p-2 border rounded"
+          />
+          {errors.reloadTime && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.reloadTime.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Damage by Distance</h2>
+          <button
+            type="button"
+            onClick={() => appendDamage({ distance: 0, damage: 0 })}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            + Add Distance
+          </button>
+        </div>
+
+        {damageFields.map((field, index) => (
+          <div key={field.id} className="flex gap-4 mb-3">
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">
+                Distance (m)
+              </label>
+              <input
+                {...register(`damages.${index}.distance`, {
+                  valueAsNumber: true,
+                })}
+                type="number"
+                placeholder="Distance (m)"
+                className="w-full p-2 border rounded"
+              />
+              {errors.damages?.[index]?.distance && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.damages[index]?.distance?.message}
+                </p>
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">Damage</label>
+              <input
+                {...register(`damages.${index}.damage`, {
+                  valueAsNumber: true,
+                })}
+                type="number"
+                placeholder="Damage"
+                className="w-full p-2 border rounded"
+              />
+              {errors.damages?.[index]?.damage && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.damages[index]?.damage?.message}
+                </p>
+              )}
+            </div>
+            {damageFields.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeDamage(index)}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        {errors.damages && !Array.isArray(errors.damages) && (
+          <p className="mt-1 text-sm text-red-600">{errors.damages.message}</p>
+        )}
+      </div>
+
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Loadouts</h2>
+          <button
+            type="button"
+            onClick={() => appendLoadout({ name: "", bulletVelocity: 0 })}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            + Add Loadout
+          </button>
+        </div>
+
+        {loadoutFields.map((field, index) => (
+          <div key={field.id} className="flex gap-4 mb-3">
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">
+                Loadout Name
+              </label>
+              <input
+                {...register(`loadouts.${index}.name`)}
+                type="text"
+                placeholder="Loadout Name"
+                className="w-full p-2 border rounded"
+              />
+              {errors.loadouts?.[index]?.name && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.loadouts[index]?.name?.message}
+                </p>
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">
+                Bullet Velocity (m/s)
+              </label>
+              <input
+                {...register(`loadouts.${index}.bulletVelocity`, {
+                  valueAsNumber: true,
+                })}
+                type="number"
+                placeholder="Bullet Velocity"
+                className="w-full p-2 border rounded"
+              />
+              {errors.loadouts?.[index]?.bulletVelocity && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.loadouts[index]?.bulletVelocity?.message}
+                </p>
+              )}
+            </div>
+            {loadoutFields.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeLoadout(index)}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        {errors.loadouts && !Array.isArray(errors.loadouts) && (
+          <p className="mt-1 text-sm text-red-600">{errors.loadouts.message}</p>
+        )}
+      </div>
+
+      <div className="flex gap-4">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="px-6 py-3 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+        >
+          Submit
+        </button>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-gray-600"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }
