@@ -31,16 +31,11 @@ interface WeaponFormData {
 }
 
 interface WeaponFormProps {
-  mode: "create" | "edit";
-  weaponId?: string;
   initialData?: WeaponFormData;
+  onSubmit: (data: WeaponFormData) => Promise<void>;
 }
 
-export default function WeaponForm({
-  mode,
-  weaponId,
-  initialData,
-}: WeaponFormProps) {
+export default function WeaponForm({ initialData, onSubmit }: WeaponFormProps) {
   const router = useRouter();
   const [name, setName] = useState(initialData?.name || "");
   const [categoryId, setCategoryId] = useState(
@@ -115,13 +110,8 @@ export default function WeaponForm({
     e.preventDefault();
     setLoading(true);
 
-    const selectedCategory = categories.find(
-      (c) => c.id === parseInt(categoryId),
-    );
-
-    const requestBody = {
+    const formData: WeaponFormData = {
       name,
-      type: selectedCategory?.name || "",
       categoryId: parseInt(categoryId),
       fireRate: parseInt(fireRate),
       magazine: parseInt(magazine),
@@ -139,34 +129,13 @@ export default function WeaponForm({
     };
 
     try {
-      const url =
-        mode === "create" ? "/api/weapons" : `/api/weapons/${weaponId}`;
-      const method = mode === "create" ? "POST" : "PUT";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        const redirectPath = mode === "create" ? "/" : `/weapons/${weaponId}`;
-        router.push(redirectPath);
-        router.refresh();
-      } else {
-        alert(`Failed to ${mode} weapon`);
-      }
+      await onSubmit(formData);
     } catch (error) {
       console.error(error);
-      alert(`Error ${mode === "create" ? "creating" : "updating"} weapon`);
     } finally {
       setLoading(false);
     }
   };
-
-  const cancelPath = mode === "create" ? "/" : `/weapons/${weaponId}`;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -360,7 +329,7 @@ export default function WeaponForm({
         </button>
         <button
           type="button"
-          onClick={() => router.push(cancelPath)}
+          onClick={() => router.back()}
           className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-gray-600"
         >
           Cancel
