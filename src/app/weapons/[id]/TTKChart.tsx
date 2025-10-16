@@ -39,12 +39,32 @@ export default function TTKChart({
 }: TTKChartProps) {
   const sortedDamages = [...damages].sort((a, b) => a.distance - b.distance);
 
+  const groupedLoadouts = loadouts.reduce(
+    (acc, loadout) => {
+      const key = loadout.bulletVelocity;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(loadout);
+      return acc;
+    },
+    {} as Record<number, Loadout[]>,
+  );
+
+  const representativeLoadouts = Object.values(groupedLoadouts).map((group) => {
+    const names = group.map((l) => l.name).join(", ");
+    return {
+      ...group[0],
+      name: names,
+    };
+  });
+
   const data = [];
 
   for (let distance = 0; distance <= 100; distance++) {
     const dataPoint: Record<string, number> = { distance };
 
-    loadouts.forEach((loadout) => {
+    representativeLoadouts.forEach((loadout) => {
       dataPoint[loadout.name] = Math.round(
         calculateTTK(sortedDamages, distance, loadout.bulletVelocity, fireRate),
       );
@@ -83,7 +103,7 @@ export default function TTKChart({
           labelStyle={{ color: "#f3f4f6" }}
         />
         <Legend />
-        {loadouts.map((loadout, index) => (
+        {representativeLoadouts.map((loadout, index) => (
           <Line
             key={loadout.id}
             type="linear"
