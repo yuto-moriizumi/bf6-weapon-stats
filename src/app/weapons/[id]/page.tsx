@@ -25,6 +25,11 @@ async function getWeapon(id: number) {
           distance: "asc",
         },
       },
+      loadouts: {
+        orderBy: {
+          name: "asc",
+        },
+      },
       category: true,
     },
   });
@@ -67,7 +72,7 @@ export default async function WeaponDetailPage({
         <h1 className="text-4xl font-bold mb-2">{weapon.name}</h1>
         <p className="text-gray-600 mb-8">{weapon.category.name}</p>
 
-        <div className="grid grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-3 gap-6 mb-8">
           <div className="border rounded-lg p-6">
             <p className="text-sm text-gray-500">Fire Rate</p>
             <p className="text-2xl font-semibold">{weapon.fireRate} RPM</p>
@@ -80,11 +85,20 @@ export default async function WeaponDetailPage({
             <p className="text-sm text-gray-500">Reload Time</p>
             <p className="text-2xl font-semibold">{weapon.reloadTime}s</p>
           </div>
-          <div className="border rounded-lg p-6">
-            <p className="text-sm text-gray-500">Bullet Velocity</p>
-            <p className="text-2xl font-semibold">
-              {weapon.bulletVelocity} m/s
-            </p>
+        </div>
+
+        <div className="border rounded-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-4">Loadouts</h2>
+          <div className="space-y-2">
+            {weapon.loadouts.map((loadout) => (
+              <div
+                key={loadout.id}
+                className="flex justify-between items-center p-3 border border-white rounded"
+              >
+                <span className="font-medium text-white">{loadout.name}</span>
+                <span className="text-white">{loadout.bulletVelocity} m/s</span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -93,7 +107,7 @@ export default async function WeaponDetailPage({
           <TTKChart
             damages={weapon.damages}
             fireRate={weapon.fireRate}
-            bulletVelocity={weapon.bulletVelocity}
+            loadouts={weapon.loadouts}
           />
         </div>
 

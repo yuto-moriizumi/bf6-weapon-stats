@@ -23,6 +23,11 @@ export async function GET(request: NextRequest) {
             distance: "asc",
           },
         },
+        loadouts: {
+          orderBy: {
+            name: "asc",
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -59,13 +64,19 @@ export async function POST(request: NextRequest) {
         fireRate,
         magazine,
         reloadTime,
-        bulletVelocity: bulletVelocity || 0,
         damages: {
           create: damages,
+        },
+        loadouts: {
+          create: {
+            name: "Default",
+            bulletVelocity: bulletVelocity || 0,
+          },
         },
       },
       include: {
         damages: true,
+        loadouts: true,
       },
     });
 

@@ -18,28 +18,59 @@ type Damage = {
   damage: number;
 };
 
+type Loadout = {
+  id: number;
+  name: string;
+  bulletVelocity: number;
+};
+
 type TTKChartProps = {
   damages: Damage[];
   fireRate: number;
-  bulletVelocity: number;
+  loadouts: Loadout[];
 };
+
+const COLORS = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
 
 export default function TTKChart({
   damages,
   fireRate,
-  bulletVelocity,
+  loadouts,
 }: TTKChartProps) {
   const sortedDamages = [...damages].sort((a, b) => a.distance - b.distance);
+
+  const groupedLoadouts = loadouts.reduce(
+    (acc, loadout) => {
+      const key = loadout.bulletVelocity;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(loadout);
+      return acc;
+    },
+    {} as Record<number, Loadout[]>,
+  );
+
+  const representativeLoadouts = Object.values(groupedLoadouts).map((group) => {
+    const names = group.map((l) => l.name).join(", ");
+    return {
+      ...group[0],
+      name: names,
+    };
+  });
 
   const data = [];
 
   for (let distance = 0; distance <= 100; distance++) {
-    data.push({
-      distance,
-      ttk: Math.round(
-        calculateTTK(sortedDamages, distance, bulletVelocity, fireRate),
-      ),
+    const dataPoint: Record<string, number> = { distance };
+
+    representativeLoadouts.forEach((loadout) => {
+      dataPoint[loadout.name] = Math.round(
+        calculateTTK(sortedDamages, distance, loadout.bulletVelocity, fireRate),
+      );
     });
+
+    data.push(dataPoint);
   }
 
   return (
@@ -72,7 +103,15 @@ export default function TTKChart({
           labelStyle={{ color: "#f3f4f6" }}
         />
         <Legend />
-        <Line type="linear" dataKey="ttk" stroke="#ef4444" strokeWidth={2} />
+        {representativeLoadouts.map((loadout, index) => (
+          <Line
+            key={loadout.id}
+            type="linear"
+            dataKey={loadout.name}
+            stroke={COLORS[index % COLORS.length]}
+            strokeWidth={2}
+          />
+        ))}
       </LineChart>
     </ResponsiveContainer>
   );
