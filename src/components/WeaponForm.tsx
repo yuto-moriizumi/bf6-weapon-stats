@@ -8,7 +8,7 @@ import { z } from "zod";
 const damageEntrySchema = z.object({
   id: z.number().optional(),
   distance: z.number().min(0, "Distance must be non-negative"),
-  damage: z.number().min(1, "Damage must be at least 1"),
+  damage: z.number().min(0.1, "Damage must be at least 0.1"),
 });
 
 const loadoutEntrySchema = z.object({
@@ -199,6 +199,7 @@ export default function WeaponForm({
                   valueAsNumber: true,
                 })}
                 type="number"
+                step="0.1"
                 placeholder="Damage"
                 className="w-full p-2 border rounded"
               />
