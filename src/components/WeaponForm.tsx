@@ -149,7 +149,7 @@ export default function WeaponForm({
           <input
             {...register("reloadTime", { valueAsNumber: true })}
             type="number"
-            step="0.1"
+            step="0.01"
             className="w-full p-2 border rounded"
           />
           {errors.reloadTime && (
