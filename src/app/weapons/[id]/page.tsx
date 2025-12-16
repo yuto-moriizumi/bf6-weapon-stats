@@ -11,7 +11,7 @@ export async function generateStaticParams() {
     select: { id: true },
   });
 
-  return weapons.map((weapon) => ({
+  return weapons.map((weapon: { id: number }) => ({
     id: weapon.id.toString(),
   }));
 }
@@ -90,15 +90,23 @@ export default async function WeaponDetailPage({
         <div className="border rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-bold mb-4">Loadouts</h2>
           <div className="space-y-2">
-            {weapon.loadouts.map((loadout) => (
-              <div
-                key={loadout.id}
-                className="flex justify-between items-center p-3 border border-white rounded"
-              >
-                <span className="font-medium text-white">{loadout.name}</span>
-                <span className="text-white">{loadout.bulletVelocity} m/s</span>
-              </div>
-            ))}
+            {weapon.loadouts.map(
+              (loadout: {
+                id: number;
+                name: string;
+                bulletVelocity: number;
+              }) => (
+                <div
+                  key={loadout.id}
+                  className="flex justify-between items-center p-3 border border-white rounded"
+                >
+                  <span className="font-medium text-white">{loadout.name}</span>
+                  <span className="text-white">
+                    {loadout.bulletVelocity} m/s
+                  </span>
+                </div>
+              ),
+            )}
           </div>
         </div>
 
