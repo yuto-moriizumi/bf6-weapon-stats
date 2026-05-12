@@ -53,8 +53,8 @@ export async function POST(request: NextRequest) {
       fireRate,
       magazine,
       reloadTime,
-      bulletVelocity,
       damages,
+      loadouts,
     } = body;
 
     const weapon = await prisma.weapon.create({
@@ -68,10 +68,12 @@ export async function POST(request: NextRequest) {
           create: damages,
         },
         loadouts: {
-          create: {
-            name: "Default",
-            bulletVelocity: bulletVelocity || 0,
-          },
+          create: loadouts.map(
+            (l: { name: string; bulletVelocity: number }) => ({
+              name: l.name,
+              bulletVelocity: l.bulletVelocity,
+            }),
+          ),
         },
       },
       include: {
