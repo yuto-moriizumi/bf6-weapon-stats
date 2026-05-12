@@ -3,8 +3,11 @@ import { prisma } from "@/lib/prisma";
 import DamageChart from "./DamageChart";
 import TTKChart from "./TTKChart";
 import Link from "next/link";
+import { auth } from "@/auth";
+import { ALLOWED_DISCORD_ID } from "@/lib/constants";
+import DeleteWeaponButton from "./DeleteWeaponButton";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   const weapons = await prisma.weapon.findMany({
@@ -54,6 +57,9 @@ export default async function WeaponDetailPage({
     notFound();
   }
 
+  const session = await auth();
+  const canManageWeapons = session?.user?.discordId === ALLOWED_DISCORD_ID;
+
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
@@ -61,12 +67,20 @@ export default async function WeaponDetailPage({
           <Link href="/" className="text-blue-500 hover:text-blue-600">
             ← Back to List
           </Link>
-          <Link
-            href={`/weapons/${weapon.id}/edit`}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Edit
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/weapons/${weapon.id}/edit`}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Edit
+            </Link>
+            {canManageWeapons && (
+              <DeleteWeaponButton
+                weaponId={weapon.id}
+                weaponName={weapon.name}
+              />
+            )}
+          </div>
         </div>
 
         <h1 className="text-4xl font-bold mb-2">{weapon.name}</h1>

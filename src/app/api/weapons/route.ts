@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { ALLOWED_DISCORD_ID } from "@/lib/constants";
+
+async function requireAdmin() {
+  const session = await auth();
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (session.user?.discordId !== ALLOWED_DISCORD_ID) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  return null;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -46,6 +62,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const authError = await requireAdmin();
+    if (authError) {
+      return authError;
+    }
+
     const body = await request.json();
     const {
       name,
